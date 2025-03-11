@@ -137,28 +137,7 @@ def parse_vtt(vtt_path):
     if current_line:
         lines.append(current_line)
     
-    # Join lines into paragraphs with proper spacing
-    paragraphs = []
-    current_paragraph = ""
-    
-    for line in lines:
-        # If this is a continuation of the same sentence or thought
-        if not current_paragraph.endswith('.') and not current_paragraph.endswith('?') and not current_paragraph.endswith('!'):
-            if current_paragraph:
-                current_paragraph += " " + line
-            else:
-                current_paragraph = line
-        else:
-            # Start a new paragraph
-            if current_paragraph:
-                paragraphs.append(current_paragraph)
-            current_paragraph = line
-    
-    # Add the last paragraph
-    if current_paragraph:
-        paragraphs.append(current_paragraph)
-    
-    return '\n\n'.join(paragraphs)
+    return '\n'.join(lines)
 
 def simple_vtt_parse(vtt_path):
     """A simpler VTT parser as fallback"""
@@ -188,29 +167,7 @@ def simple_vtt_parse(vtt_path):
                 seen.add(normalized)
                 unique_lines.append(line)
         
-        # Process lines into paragraphs
-        paragraphs = []
-        current_paragraph = ""
-        
-        for line in unique_lines:
-            if not current_paragraph:
-                current_paragraph = line
-            # If the current line appears to be a continuation of the current paragraph
-            elif not current_paragraph.endswith('.') and not current_paragraph.endswith('?') and not current_paragraph.endswith('!'):
-                current_paragraph += " " + line
-            # If the line is very short, likely it belongs to the current paragraph
-            elif len(line) < 20:
-                current_paragraph += " " + line
-            else:
-                # Start a new paragraph
-                paragraphs.append(current_paragraph)
-                current_paragraph = line
-        
-        # Add the last paragraph
-        if current_paragraph:
-            paragraphs.append(current_paragraph)
-        
-        return '\n\n'.join(paragraphs)
+        return '\n'.join(unique_lines)
     except Exception as e:
         print(f"Error in simple_vtt_parse: {e}")
         return "Could not parse subtitles. Please manually check the VTT file."
