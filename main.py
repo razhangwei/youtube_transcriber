@@ -4,21 +4,30 @@ import argparse
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
 from utils.youtube import download_audio, extract_subtitles, get_video_metadata
 from utils.transcribe import transcribe_audio
 from utils.postprocess import improve_transcript
 from utils.convert import convert_to_epub
 
 def main():
+    # Load environment variables from .env file
+    load_dotenv()
+    
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Download YouTube audio, transcribe, and improve readability")
     parser.add_argument("url", help="YouTube video URL")
     parser.add_argument("-o", "--output", help="Output directory", default="./output")
-    parser.add_argument("--fal-api-key", help="FAL.ai API key (optional if set as environment variable)")
-    parser.add_argument("--gemini-api-key", help="Gemini API key (optional if set as environment variable)")
+    parser.add_argument("--fal-api-key", help="FAL.ai API key (optional if set in .env file)")
+    parser.add_argument("--gemini-api-key", help="Gemini API key (optional if set in .env file)")
+    parser.add_argument("--env-file", help="Path to custom .env file", default=".env")
     args = parser.parse_args()
     
-    # Set API keys
+    # Load custom .env file if specified
+    if args.env_file and args.env_file != ".env":
+        load_dotenv(args.env_file)
+    
+    # Set API keys from command line (overrides .env)
     if args.fal_api_key:
         os.environ["FAL_AI_API_KEY"] = args.fal_api_key
     if args.gemini_api_key:
@@ -26,10 +35,10 @@ def main():
     
     # Check for required API keys
     if not os.environ.get("FAL_AI_API_KEY"):
-        print("Error: FAL_AI_API_KEY environment variable or --fal-api-key argument is required")
+        print("Error: FAL_AI_API_KEY not found. Set it in .env file or use --fal-api-key")
         return 1
     if not os.environ.get("GEMINI_API_KEY"):
-        print("Error: GEMINI_API_KEY environment variable or --gemini-api-key argument is required")
+        print("Error: GEMINI_API_KEY not found. Set it in .env file or use --gemini-api-key")
         return 1
     
     # Create output directory if it doesn't exist

@@ -28,6 +28,8 @@ env/
 
 # API keys and sensitive data
 .env
+.env.*
+!.env.example
 
 # Output files
 output/

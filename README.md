@@ -40,10 +40,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Set up API keys:
+3. Set up API keys by creating a `.env` file:
 ```
-export FAL_AI_API_KEY="your-fal-ai-key"
-export GEMINI_API_KEY="your-gemini-key"
+cp .env.example .env
+```
+Then edit the `.env` file to add your API keys:
+```
+FAL_AI_API_KEY=your_fal_ai_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 ## Usage
@@ -58,9 +62,16 @@ With custom output directory:
 python main.py https://www.youtube.com/watch?v=XXXXXXXXXXX -o /path/to/output
 ```
 
-Providing API keys via command line:
+Alternative API key methods:
+
+1. Using command line arguments (overrides .env):
 ```
 python main.py https://www.youtube.com/watch?v=XXXXXXXXXXX --fal-api-key YOUR_KEY --gemini-api-key YOUR_KEY
+```
+
+2. Using a custom .env file:
+```
+python main.py https://www.youtube.com/watch?v=XXXXXXXXXXX --env-file /path/to/custom/.env
 ```
 
 ## How It Works
