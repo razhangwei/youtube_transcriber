@@ -25,14 +25,14 @@ def improve_transcript(transcript):
     Format your response in Markdown.
     """
     
-    # Create the model
+    # Create the model with settings matching your preferences
     model = genai.GenerativeModel(
         model_name="gemini-2.0-flash-thinking-exp-01-21",
         generation_config={
-            "temperature": 0.2,
+            "temperature": 0.7,    # Adjusted to match your settings
             "top_p": 0.95,
             "top_k": 0,
-            "max_output_tokens": 8192,
+            "max_output_tokens": 65536,  # Increased to match your settings
         },
     )
     
@@ -49,6 +49,7 @@ def improve_transcript(transcript):
     ])
     
     # Send the transcript for improvement
+    print(f"Transcript length: {len(transcript)} characters")
     response = chat.send_message(
         f"Here's the transcript to improve:\n\n{transcript}"
     )

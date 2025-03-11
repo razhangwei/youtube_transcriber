@@ -175,11 +175,42 @@ def simple_vtt_parse(vtt_path):
         # Remove header
         content = re.sub(r'^WEBVTT.*\n', '', content)
         
-        # Remove empty lines
+        # Remove empty lines and get non-empty lines
         lines = [line.strip() for line in content.split('\n') if line.strip()]
         
-        # Join remaining lines
-        return '\n\n'.join(lines)
+        # Remove duplicates while preserving order
+        unique_lines = []
+        seen = set()
+        for line in lines:
+            # Normalize line to avoid near-duplicates (lowercase, remove extra spaces)
+            normalized = ' '.join(line.lower().split())
+            if normalized not in seen:
+                seen.add(normalized)
+                unique_lines.append(line)
+        
+        # Process lines into paragraphs
+        paragraphs = []
+        current_paragraph = ""
+        
+        for line in unique_lines:
+            if not current_paragraph:
+                current_paragraph = line
+            # If the current line appears to be a continuation of the current paragraph
+            elif not current_paragraph.endswith('.') and not current_paragraph.endswith('?') and not current_paragraph.endswith('!'):
+                current_paragraph += " " + line
+            # If the line is very short, likely it belongs to the current paragraph
+            elif len(line) < 20:
+                current_paragraph += " " + line
+            else:
+                # Start a new paragraph
+                paragraphs.append(current_paragraph)
+                current_paragraph = line
+        
+        # Add the last paragraph
+        if current_paragraph:
+            paragraphs.append(current_paragraph)
+        
+        return '\n\n'.join(paragraphs)
     except Exception as e:
         print(f"Error in simple_vtt_parse: {e}")
         return "Could not parse subtitles. Please manually check the VTT file."
