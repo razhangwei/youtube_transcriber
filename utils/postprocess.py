@@ -22,14 +22,14 @@ def improve_transcript(transcript):
     - Emphasizing Key Information: Use bold text or other formatting (if applicable in your context) to highlight headings, subheadings, key terms, or important points for emphasis and scannability.
     - Annotating Non-Verbal Cues (Optional): If there are descriptions of actions, gestures, or non-verbal cues (like laughter, pauses, object usage for illustration), consider adding brief annotations in parentheses or brackets to capture these elements if they are important to the transcript's context.
     
-    Format your response in Markdown.
+    Format your response in Markdown. Only include the improved transcript, no additional text.
     """
     
     # Create the model with settings matching your preferences
     model = genai.GenerativeModel(
         model_name="gemini-2.0-flash-thinking-exp-01-21",
         generation_config={
-            "temperature": 0.7,    # Adjusted to match your settings
+            "temperature": 0.2,    # Adjusted to match your settings
             "top_p": 0.95,
             "top_k": 0,
             "max_output_tokens": 65536,  # Increased to match your settings
