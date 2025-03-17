@@ -74,12 +74,7 @@ def extract_subtitles(url, output_dir, video_id):
     
     # Parse VTT to clean text
     try:
-        clean_text = parse_vtt(vtt_path)
-        
-        # If clean_text is empty, try a simpler parsing approach
-        if not clean_text.strip():
-            print("Warning: Initial parsing produced empty text, trying alternative parsing...")
-            clean_text = simple_vtt_parse(vtt_path)
+        clean_text = simple_vtt_parse(vtt_path)
         
         # Save clean text
         with open(text_path, 'w', encoding='utf-8') as f:
@@ -94,50 +89,6 @@ def extract_subtitles(url, output_dir, video_id):
     except Exception as e:
         print(f"Error parsing subtitles: {e}")
         return None
-
-def parse_vtt(vtt_path):
-    """Extract text from VTT subtitle file, removing timestamps and metadata"""
-    with open(vtt_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    # For VTT files with special YouTube formatting
-    if "<c>" in content or "<00:" in content:
-        return parse_youtube_vtt(vtt_path)
-    
-    # Remove header
-    content = re.sub(r'^WEBVTT\n.+\n\n', '', content, flags=re.DOTALL)
-    
-    # Extract text, ignore timestamps and speaker identifiers
-    lines = []
-    current_line = ""
-    
-    for line in content.split('\n'):
-        # Skip timestamp lines or empty lines
-        if re.match(r'^\d{2}:\d{2}:\d{2}\.\d{3} --> \d{2}:\d{2}:\d{2}\.\d{3}', line) or not line.strip():
-            if current_line:
-                lines.append(current_line)
-                current_line = ""
-            continue
-        
-        # Skip VTT note lines
-        if line.startswith('NOTE '):
-            continue
-        
-        # Skip VTT identifier lines (typically just a number)
-        if re.match(r'^\d+$', line.strip()):
-            continue
-            
-        # Add text content
-        if current_line:
-            current_line += " " + line.strip()
-        else:
-            current_line = line.strip()
-    
-    # Don't forget the last line
-    if current_line:
-        lines.append(current_line)
-    
-    return '\n'.join(lines)
 
 def simple_vtt_parse(vtt_path):
     """A simpler VTT parser as fallback"""
@@ -171,14 +122,3 @@ def simple_vtt_parse(vtt_path):
     except Exception as e:
         print(f"Error in simple_vtt_parse: {e}")
         return "Could not parse subtitles. Please manually check the VTT file."
-
-def parse_youtube_vtt(vtt_path):
-    """Parse YouTube's specific VTT format with HTML-like tags and timestamps"""
-    try:
-        print(f"Parsing YouTube VTT: {vtt_path}")
-        
-        # Use simple parsing as we're having issues with the complex approach
-        return simple_vtt_parse(vtt_path)
-    except Exception as e:
-        print(f"Error in parse_youtube_vtt: {e}")
-        return "Could not parse subtitles."
