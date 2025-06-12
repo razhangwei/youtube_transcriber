@@ -58,11 +58,31 @@ With custom output directory:
 python main.py https://www.youtube.com/watch?v=XXXXXXXXXXX -o /path/to/output
 ```
 
-Alternative API key methods:
+### Gemini Model Configuration
+
+You can customize the Gemini model's behavior with these options:
+
+```
+--model MODEL_NAME        # Default: gemini-2.5-flash-preview-05-20
+--temperature TEMP        # Controls randomness (0.0 to 1.0), default: 0.2
+--top-p TOP_P             # Nucleus sampling, default: 0.95
+--top-k TOP_K             # Top-k sampling, default: 0
+--max-tokens TOKENS       # Max tokens in response, default: 65536
+```
+
+Example with custom model settings:
+```
+python main.py https://www.youtube.com/watch?v=XXXXXXXXXXX \
+  --gemini-model gemini-1.5-pro \
+  --gemini-temperature 0.7 \
+  --gemini-max-tokens 8192
+```
+
+### API Key Configuration
 
 1. Using command line arguments (overrides .env):
 ```
-python main.py https://www.youtube.com/watch?v=XXXXXXXXXXX --fal-api-key YOUR_KEY --gemini-api-key YOUR_KEY
+python main.py https://www.youtube.com/watch?v=XXXXXXXXXXX --gemini-api-key YOUR_KEY
 ```
 
 2. Using a custom .env file:

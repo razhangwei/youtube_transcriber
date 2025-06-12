@@ -1,8 +1,21 @@
 import google.generativeai as genai
 import os
 
-def improve_transcript(transcript):
-    """Improve transcript readability using Gemini"""
+def improve_transcript(transcript, model_name="gemini-2.5-flash-preview-05-20", temperature=0.2, top_p=0.95, top_k=0, max_output_tokens=65536, system_prompt=None):
+    """Improve transcript readability using Gemini
+    
+    Args:
+        transcript (str): The transcript text to improve
+        model_name (str): Name of the Gemini model to use
+        temperature (float): Controls randomness (0.0 to 1.0)
+        top_p (float): Nucleus sampling parameter
+        top_k (int): Top-k sampling parameter
+        max_output_tokens (int): Maximum number of tokens in the response
+        system_prompt (str, optional): Custom system prompt. If None, uses default.
+    
+    Returns:
+        str: Improved transcript text
+    """
     # Get API key from environment variable
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -11,8 +24,8 @@ def improve_transcript(transcript):
     # Configure the Gemini API
     genai.configure(api_key=api_key)
     
-    # System prompt for improving readability
-    system_prompt = """
+    # Default system prompt for improving readability
+    default_system_prompt = """
     You are a transcript editor. Please improve the following YouTube transcript by:
     
     - Improving Paragraphing: Break down long paragraphs into shorter, more digestible paragraphs to enhance visual readability.
@@ -25,14 +38,17 @@ def improve_transcript(transcript):
     Format your response in Markdown. Only include the improved transcript, no additional text.
     """
     
-    # Create the model with settings matching your preferences
+    # Use custom prompt if provided, otherwise use default
+    system_prompt = system_prompt or default_system_prompt
+    
+    # Create the model with provided or default settings
     model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash-thinking-exp-01-21",
+        model_name=model_name,
         generation_config={
-            "temperature": 0.2,    # Adjusted to match your settings
-            "top_p": 0.95,
-            "top_k": 0,
-            "max_output_tokens": 65536,  # Increased to match your settings
+            "temperature": temperature,
+            "top_p": top_p,
+            "top_k": top_k,
+            "max_output_tokens": max_output_tokens,
         },
     )
     

@@ -19,6 +19,13 @@ def main():
     parser.add_argument("-o", "--output", help="Output directory", default="./output")
     parser.add_argument("--gemini-api-key", help="Gemini API key (optional if set in .env file)")
     parser.add_argument("--env-file", help="Path to custom .env file", default=".env")
+    
+    # Gemini model configuration
+    parser.add_argument("--model", help="Gemini model name", default="gemini-2.5-flash-preview-05-20")
+    parser.add_argument("--temperature", type=float, help="Temperature for generation (0.0 to 1.0)", default=0.2)
+    parser.add_argument("--top-p", type=float, help="Top-p sampling parameter", default=0.95)
+    parser.add_argument("--top-k", type=int, help="Top-k sampling parameter", default=0)
+    parser.add_argument("--max-tokens", type=int, help="Maximum number of tokens in response", default=65536)
     args = parser.parse_args()
     
     # Load custom .env file if specified
@@ -97,7 +104,14 @@ def main():
     try:
         # Improve transcript with Gemini
         print("Improving transcript readability...")
-        improved_transcript = improve_transcript(transcript)
+        improved_transcript = improve_transcript(
+            transcript,
+            model_name=args.model,
+            temperature=args.temperature,
+            top_p=args.top_p,
+            top_k=args.top_k,
+            max_output_tokens=args.max_tokens
+        )
         print("Transcript improvement completed")
         
         # Add metadata as a header
